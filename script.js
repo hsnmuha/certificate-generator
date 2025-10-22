@@ -91,7 +91,29 @@ function generateSertifikat(nama) {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
   const img = new Image();
+  img.crossOrigin = "anonymous";
   img.src = templateImage;
+
+  // buat atau ambil elemen indikator
+  let indicator = document.getElementById("generatingIndicator");
+  if (!indicator) {
+    indicator = document.createElement("div");
+    indicator.id = "generatingIndicator";
+    indicator.style.marginTop = "8px";
+    indicator.style.padding = "6px 10px";
+    indicator.style.background = "#f8f8f8";
+    indicator.style.border = "1px solid #e0e0e0";
+    indicator.style.borderRadius = "4px";
+    indicator.style.display = "none";
+    indicator.style.fontWeight = "600";
+    // letakkan di bawah canvas (jika ada parent)
+    const parent = canvas.parentNode || document.body;
+    parent.appendChild(indicator);
+  }
+
+  // tampilkan indikator
+  indicator.textContent = "Menghasilkan sertifikat...";
+  indicator.style.display = "inline-block";
 
   img.onload = function() {
     canvas.width = img.width;
@@ -99,6 +121,7 @@ function generateSertifikat(nama) {
     canvas.style.width = "600px";
     canvas.style.height = "auto";
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
     ctx.fillStyle = "#000000";
     ctx.textAlign = "center";
@@ -120,7 +143,23 @@ function generateSertifikat(nama) {
     const downloadBtn = document.getElementById("downloadBtn");
     downloadBtn.style.display = "inline-block";
     downloadBtn.download = `Sertifikat ${nama}.png`;
-    downloadBtn.href = canvas.toDataURL("image/png");
+
+    try {
+      downloadBtn.href = canvas.toDataURL("image/png");
+    } catch (e) {
+      console.error("Export gagal (mungkin CORS pada gambar):", e);
+      downloadBtn.href = "#";
+      alert("Gagal mengekspor gambar. Pastikan template berada di server yang sama atau mendukung CORS.");
+    } finally {
+      // sembunyikan indikator setelah selesai
+      indicator.style.display = "none";
+    }
+  };
+
+  img.onerror = function() {
+    // sembunyikan indikator kalau error
+    indicator.style.display = "none";
+    alert("Gagal memuat template sertifikat.");
   };
 }
 
