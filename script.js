@@ -1,5 +1,5 @@
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQh2Awp40_b4i_mNgSXs4Pmpd5LiFvdK41cIkR2y8bhnv_YacEZc6O_UGyKfgvo51Qa_7Xkhf7lbuVL/pub?output=csv";
-const templateImage = "template-sertifikat.png";
+const templateImage = "template-sertifikat-1.png";
 
 async function getData() {
   const response = await fetch(sheetURL);
@@ -58,12 +58,12 @@ function generateSertifikat(nama) {
     canvas.style.height = "auto";
 
     ctx.drawImage(img, 0, 0);
-    ctx.fillStyle = "#51288D";
+    ctx.fillStyle = "#000000";
     ctx.textAlign = "center";
-    let fontSize = 80;
+    let fontSize = 100;
     const maxWidth = 1100;
-    const x = canvas.width / 2;
-    const y = canvas.height / 2 - 1;
+    const x = canvas.width / 3.5;
+    const y = canvas.height / 1.8;
 
     do {
       ctx.font = `bold ${fontSize}px 'Poppins', 'Arial', sans-serif`;
