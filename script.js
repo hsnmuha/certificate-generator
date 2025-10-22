@@ -14,12 +14,12 @@ async function getData() {
 }
 
 async function cekPeserta() {
-  const nomorInput = document.getElementById("nomorInput").value.trim();
+  const queryInput = document.getElementById("nomorInput").value.trim();
   const hasil = document.getElementById("hasil");
   const cekBtn = document.getElementById("cekBtn");
 
-  if (!nomorInput) {
-    hasil.innerHTML = `<p style="color:red;">Masukkan nomor NTA terlebih dahulu.</p>`;
+  if (!queryInput) {
+    hasil.innerHTML = `<p style="color:red;">Masukkan nama terlebih dahulu.</p>`;
     return;
   }
 
@@ -29,15 +29,57 @@ async function cekPeserta() {
 
   try {
     const data = await getData();
-    const peserta = data.find(item => item.nomor === nomorInput);
+    const q = queryInput.toLowerCase();
+    const tokens = q.split(/\s+/).filter(Boolean);
 
-    if (peserta) {
-      hasil.innerHTML = `<p><strong>Nama:</strong> ${peserta.nama}</p>`;
-      generateSertifikat(peserta.nama);
+    // cari semua peserta yang memenuhi semua token (partial, case-insensitive)
+    const matches = data.filter(item => {
+      const name = (item.nama || "").toLowerCase();
+      return tokens.every(t => name.includes(t));
+    });
+
+    if (matches.length === 1) {
+      // tampilkan nama aman tanpa injeksi HTML
+      hasil.innerHTML = "";
+      const p = document.createElement("p");
+      const strong = document.createElement("strong");
+      strong.textContent = "Nama: ";
+      p.appendChild(strong);
+      p.appendChild(document.createTextNode(matches[0].nama || ""));
+      hasil.appendChild(p);
+
+      generateSertifikat(matches[0].nama);
+    } else if (matches.length > 1) {
+      // tampilkan daftar pilihan jika lebih dari satu hasil
+      hasil.innerHTML = `<p>Ditemukan ${matches.length} hasil. Pilih nama:</p>`;
+      const ul = document.createElement("ul");
+      ul.style.paddingLeft = "1.2rem";
+      matches.forEach(match => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = match.nama || "(nama kosong)";
+        btn.style.margin = "4px";
+        btn.addEventListener("click", () => {
+          // tampilkan pilihan dan generate sertifikat
+          hasil.innerHTML = "";
+          const p = document.createElement("p");
+          const strong = document.createElement("strong");
+          strong.textContent = "Nama: ";
+          p.appendChild(strong);
+          p.appendChild(document.createTextNode(match.nama || ""));
+          hasil.appendChild(p);
+          generateSertifikat(match.nama);
+        });
+        li.appendChild(btn);
+        ul.appendChild(li);
+      });
+      hasil.appendChild(ul);
     } else {
-      hasil.innerHTML = `<p style="color:red;">Nomor tidak ditemukan.</p>`;
+      hasil.innerHTML = `<p style="color:red;">Nama tidak ditemukan.</p>`;
     }
   } catch (err) {
+    console.error(err);
     hasil.innerHTML = `<p style="color:red;">Gagal memuat data.</p>`;
   } finally {
     cekBtn.disabled = false;
