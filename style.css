@@ -7,6 +7,7 @@ body {
   padding: 2rem;
   min-height: 100vh;
   box-sizing: border-box;
+  
 }
 
 .container {
@@ -16,6 +17,20 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   text-align: center;
   width: 350px;
+}
+
+.gambar-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+  
+.gambar {
+  width: 100px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 10px;
 }
 
 input, button {
@@ -83,4 +98,49 @@ footer {
   color: #666;
   margin-top: auto;
   padding-top: 1.5rem;
+}
+/* --- RESPONSIVE STYLING --- */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  input, button {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  canvas {
+    width: 100% !important;
+  }
+
+  footer {
+    font-size: 0.8rem;
+    padding-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  button {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  a.download-btn {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
 }
